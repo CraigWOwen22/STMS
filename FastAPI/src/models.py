@@ -16,9 +16,10 @@ class Booking(Base):
     id = Column(Integer, primary_key=True, index=True)
     userID = Column(Integer, ForeignKey("users.id"))
     section = Column(String(1))
-    seat = Column(Integer)
-    price = Column(Integer)
-    dateOfBooking = Column(DateTime, default=datetime.utcnow) 
+    show = Column(String(50))
+    seats = Column(Integer)
+    totalPrice = Column(Integer)
+    bookingDate = Column(String(10)) 
 
 class Theatre(Base):
     __tablename__ = "theatre"

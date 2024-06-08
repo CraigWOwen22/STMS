@@ -10,9 +10,9 @@ class UserResp(BaseModel):
 
 class BookingResp(BaseModel):
     section: str
-    seat: int
-    price: int
-    userID: int
+    show: str
+    seats: int
+    bookingDate: str
 
     
 

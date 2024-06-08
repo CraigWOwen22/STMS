@@ -1,6 +1,6 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from src import userController, bookingController, theatreController
+from src.Controllers import userController, bookingController, theatreController
 from src.database import Base, engine
 
 app = FastAPI()

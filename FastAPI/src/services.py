@@ -24,7 +24,7 @@ def createUser(db: Session, userData: UserResp):
 #Need to add functionality to only book if capacity allows
 def createBooking(db: Session, bookingData: BookingResp):
 
-    booking = Booking(section = bookingData['section'], seat = bookingData['seat'], price = bookingData['price'], userID = bookingData['userID'])
+    booking = Booking(show = bookingData['show'], seats = bookingData['seats'], section = bookingData['section'], bookingDate = bookingData['bookingDate'])
 
     db.add(booking)
     db.commit()
@@ -46,11 +46,14 @@ def getAllUsers(db:Session):
 
 
 #Get remaining seats by section 
-#def getAllSectionSeats(db:Session, response_model=list[TheatreResp]):
-def getAllSectionSeats(db:Session):
+#Need to catch error when not all sections are present in DB
+def getAllSectionSeats(dateData: str, db: Session):
 
-    totalSeatsBySecRem = db.query(Booking.section,func.sum(Booking.seat)).filter(Booking.section.in_(['A', 'B', 'C'])).group_by(Booking.section).all()
+    totalSeatsBySecRem = db.query(Booking.section,func.sum(Booking.seats)).filter(Booking.section.in_(['A', 'B', 'C']), Booking.bookingDate == dateData).group_by(Booking.section).all()
     totalSeatsBySec = db.query(Theatre.section,Theatre.seats).all()
+
+    print(totalSeatsBySecRem)
+    print(totalSeatsBySec)
     
     dict_totalSeatsBySecRem = dict(totalSeatsBySecRem)
     dict_totalSeatsBySec = dict(totalSeatsBySec)
@@ -61,9 +64,9 @@ def getAllSectionSeats(db:Session):
 
 
 #Get total available seats
-def getAllSeats(db:Session):
+def getAllSeats(dateData: str, db:Session):
 
-    totalSeatsBySecRem = db.query(Booking.section,func.sum(Booking.seat)).filter(Booking.section.in_(['A', 'B', 'C'])).group_by(Booking.section).all()
+    totalSeatsBySecRem = db.query(Booking.section,func.sum(Booking.seats)).filter(Booking.section.in_(['A', 'B', 'C']), Booking.bookingDate == dateData).group_by(Booking.section).all()
     totalSeatsBySec = db.query(Theatre.section,Theatre.seats).all()
 
     dict_totalSeatsBySecRem = dict(totalSeatsBySecRem)
