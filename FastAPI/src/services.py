@@ -10,6 +10,8 @@ from fastapi import HTTPException
 #Create a user
 def createUser(db: Session, userData: UserResp):
 
+
+
     user = User(username = userData['username'], password = userData['password'])
     db.add(user)
     db.commit()
@@ -23,7 +25,16 @@ def createUser(db: Session, userData: UserResp):
 #Create a booking
 #Need to add functionality to only book if capacity allows
 def createBooking(db: Session, bookingData: BookingResp):
+    
+    seatsRemainDict = getAllSectionSeats(bookingData['bookingDate'], db)
 
+    for item in seatsRemainDict:
+        if item['key'] == bookingData['section']:
+            test = item['value']
+
+    if bookingData['seats'] > test:
+        raise HTTPException(status_code=409, detail=f"No seats left for section: {bookingData['section']}")
+        
     booking = Booking(show = bookingData['show'], seats = bookingData['seats'], section = bookingData['section'], bookingDate = bookingData['bookingDate'])
 
     db.add(booking)
@@ -52,8 +63,8 @@ def getAllSectionSeats(dateData: str, db: Session):
     totalSeatsBySecRem = db.query(Booking.section,func.sum(Booking.seats)).filter(Booking.section.in_(['A', 'B', 'C']), Booking.bookingDate == dateData).group_by(Booking.section).all()
     totalSeatsBySec = db.query(Theatre.section,Theatre.seats).all()
 
-    print(totalSeatsBySecRem)
-    print(totalSeatsBySec)
+    #print(totalSeatsBySecRem)
+    #print(totalSeatsBySec)
     
     dict_totalSeatsBySecRem = dict(totalSeatsBySecRem)
     dict_totalSeatsBySec = dict(totalSeatsBySec)
@@ -78,7 +89,7 @@ def getAllSeats(dateData: str, db:Session):
     total_seats = sum(item['value'] for item in result_list)
     total_seats_dict = {'Total': total_seats}
 
-    print(total_seats_dict)
+    #print(total_seats_dict)
     
     return total_seats_dict
     
