@@ -20,7 +20,6 @@ def getAll( db: Session = Depends(get_db)):
     bookings = services.getAllBookings(db)
     return bookings
 
-
 @router.get("/getallsectionseats", tags=["bookings"])
 def getAllSectionSeats(dateData: str, db: Session = Depends(get_db)):
     count = services.getAllSectionSeats(dateData, db)
@@ -30,7 +29,6 @@ def getAllSectionSeats(dateData: str, db: Session = Depends(get_db)):
 def getAllSeats(dateData: str, db: Session = Depends(get_db)):
     count = services.getAllSeats(dateData, db)
     return count
-
 
 @router.delete("{booking_id}", tags=["bookings"])
 def delete_booking(booking_id: int, db: Session = Depends(get_db)):

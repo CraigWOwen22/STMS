@@ -7,7 +7,12 @@ from fastapi import HTTPException
 
 ########## Theatre Services ##########
 
+#create a new section in the theatre
 def createSection(db: Session, sectionData: Theatre):
+
+    existingSection = db.query(Theatre).filter(Theatre.section == sectionData['section']).first()
+    if existingSection:
+        raise HTTPException(status_code=400, detail="Section already exists")
     
     section = Theatre(section = sectionData['section'], seats = sectionData['seats'], prices = sectionData['prices'])
     db.add(section)
@@ -17,18 +22,21 @@ def createSection(db: Session, sectionData: Theatre):
     return section
 
 
+#get all priced by section
 def getAllPrices(db:Session):
     return db.query(Theatre.section, Theatre.prices).all()
     
 
-
 ########## User Services ##########
 
-#Create a user
+#create a new user
 def createUser(db: Session, userData: UserResp):
 
+    existing_user = db.query(User).filter(User.username == userData['username']).first()
+    if existing_user:
+        raise HTTPException(status_code=400, detail="User already exists")
 
-
+    
     user = User(username = userData['username'], password = userData['password'])
     db.add(user)
     db.commit()
@@ -39,26 +47,18 @@ def createUser(db: Session, userData: UserResp):
 
 ########## Booking Services ##########
 
-#Create a booking
-#Need to add functionality to only book if capacity allows
+#create a new booking
 def createBooking(db: Session, bookingData: BookingResp):
     
+    seatsRemainDict = getAllSectionSeats(bookingData['bookingDate'], db) 
     
-    seatsRemainDict = getAllSectionSeats(bookingData['bookingDate'], db) #Get all seats left
-
-
-
-    #emptySeats = db.query(Theatre.section,Theatre.seats).all()
-
-
-    for item in seatsRemainDict: #Check each item in the current dict
+    for item in seatsRemainDict:
         if item['key'] == bookingData['section']: #A == B (user)
             test = item['value']  
 
     if bookingData['seats'] > test:
         raise HTTPException(status_code=409, detail=f"No seats left for section: {bookingData['section']}")
 
-       
     booking = Booking(show = bookingData['show'], seats = bookingData['seats'], section = bookingData['section'], bookingDate = bookingData['bookingDate'])
 
     db.add(booking)
@@ -68,96 +68,85 @@ def createBooking(db: Session, bookingData: BookingResp):
     return booking
 
 
-#Get all bookings
+#get all current bookings
 def getAllBookings(db:Session):
 
     return db.query(Booking).all()
     
 
-#Get all users
+#get all current users
 def getAllUsers(db:Session):
     
     return db.query(User).all()
 
 
-#Get remaining seats by section 
-#Need to catch error when not all sections are present in DB
+#get remaining seats by section 
 def getAllSectionSeats(dateData: str, db: Session):
     
-   
     totalSeatsBySec = db.query(Theatre.section, Theatre.seats).all()
     
-    section_seats_dict = dict(totalSeatsBySec)
+    sectionSeatsDict = dict(totalSeatsBySec)
     
     totalSeatsBookedBySec = db.query(Booking.section, func.sum(Booking.seats)).filter(
         Booking.section.in_(['A', 'B', 'C']),
         Booking.bookingDate == dateData).group_by(Booking.section).all()
     
-    booked_seats_dict = dict(totalSeatsBookedBySec)
+    bookedSeatsDict = dict(totalSeatsBookedBySec)
     
     for section in ['A', 'B', 'C']:
-        if section not in booked_seats_dict:
+        if section not in bookedSeatsDict:
             totalSeatsBookedBySec.append((section, 0))
-        if section in section_seats_dict:
-            booked_seats_dict[section] = 0
+        if section in sectionSeatsDict:
+            bookedSeatsDict[section] = 0
         else:
             raise ValueError(f"Section '{section}' not found in the Theatre table.")
 
+    dictTotalSeatsBySecRem = dict(totalSeatsBookedBySec)
+    dictTotalSeatsBySec = dict(totalSeatsBySec)
+
+    resultList = [{'key': key, 'value': dictTotalSeatsBySec[key] - dictTotalSeatsBySecRem[key]} 
+               for key in dictTotalSeatsBySec 
+               if key in dictTotalSeatsBySecRem]
     
-    dict_totalSeatsBySecRem = dict(totalSeatsBookedBySec)
-    dict_totalSeatsBySec = dict(totalSeatsBySec)
+    return resultList
 
 
-    result_list = [{'key': key, 'value': dict_totalSeatsBySec[key] - dict_totalSeatsBySecRem[key]} 
-               for key in dict_totalSeatsBySec 
-               if key in dict_totalSeatsBySecRem]
-
-
-    return result_list
-
-
-#Get total available seats
+#get total available seats
 def getAllSeats(dateData: str, db:Session):
 
     #Futute improvement - Possibly the getAllSectionSeats can be used here to prevent repetitve code
      
-   
     totalSeatsBySec = db.query(Theatre.section, Theatre.seats).all()
     
-    section_seats_dict = dict(totalSeatsBySec)
+    sectionSeatsDict = dict(totalSeatsBySec)
     
     totalSeatsBookedBySec = db.query(Booking.section, func.sum(Booking.seats)).filter(
         Booking.section.in_(['A', 'B', 'C']),
         Booking.bookingDate == dateData).group_by(Booking.section).all()
     
-    booked_seats_dict = dict(totalSeatsBookedBySec)
+    bookedSeatsDict = dict(totalSeatsBookedBySec)
     
     for section in ['A', 'B', 'C']:
-        if section not in booked_seats_dict:
+        if section not in bookedSeatsDict:
             totalSeatsBookedBySec.append((section, 0))
-        if section in section_seats_dict:
-            booked_seats_dict[section] = 0
+        if section in sectionSeatsDict:
+            bookedSeatsDict[section] = 0
         else:
             raise ValueError(f"Section '{section}' not found in the Theatre table.")
 
+    dictTotalSeatsBySecRem = dict(totalSeatsBookedBySec)
+    dictTotalSeatsBySec = dict(totalSeatsBySec)
+
+    resultList = [{'key': key, 'value': dictTotalSeatsBySec[key] - dictTotalSeatsBySecRem[key]} 
+               for key in dictTotalSeatsBySec
+               if key in dictTotalSeatsBySecRem]
+
+    total_seats = sum(item['value'] for item in resultList)
+    totalSeatsDict = {'Total': total_seats}
+
+    return totalSeatsDict
     
-    dict_totalSeatsBySecRem = dict(totalSeatsBookedBySec)
-    dict_totalSeatsBySec = dict(totalSeatsBySec)
-
-
-    result_list = [{'key': key, 'value': dict_totalSeatsBySec[key] - dict_totalSeatsBySecRem[key]} 
-               for key in dict_totalSeatsBySec 
-               if key in dict_totalSeatsBySecRem]
-
-
-
-    total_seats = sum(item['value'] for item in result_list)
-    total_seats_dict = {'Total': total_seats}
-
-    
-    return total_seats_dict
-    
-
+#delete a booking by bookingid
 def deleteBookingByID(booking_id: int, db: Session): 
     
     booking = db.query(Booking).filter(Booking.id == booking_id).first()
