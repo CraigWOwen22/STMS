@@ -24,6 +24,7 @@ class BookingResp(BaseModel):
 class TheatreResp(BaseModel):
     section:str
     seats: int
+    prices: int
     
 
     class Config():

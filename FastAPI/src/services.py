@@ -5,6 +5,23 @@ from sqlalchemy.sql import func
 from fastapi import HTTPException
 
 
+########## Theatre Services ##########
+
+def createSection(db: Session, sectionData: Theatre):
+    
+    section = Theatre(section = sectionData['section'], seats = sectionData['seats'], prices = sectionData['prices'])
+    db.add(section)
+    db.commit()
+    db.refresh(section)
+    
+    return section
+
+
+def getAllPrices(db:Session):
+    return db.query(Theatre.section, Theatre.prices).all()
+    
+
+
 ########## User Services ##########
 
 #Create a user

@@ -21,11 +21,14 @@ class Booking(Base):
     totalPrice = Column(Integer)
     bookingDate = Column(String(10)) 
 
+
+#Maybe make a relationship with prices
 class Theatre(Base):
     __tablename__ = "theatre"
 
     id = Column(Integer, primary_key=True, index=True)
     section = Column(String(1))
     seats = Column(Integer)
+    prices = Column(Integer)
 
     

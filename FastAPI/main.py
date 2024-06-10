@@ -11,6 +11,8 @@ app.add_middleware(CORSMiddleware, allow_origins=origins, allow_methods=["*"], a
 
 app.include_router(userController.router)
 app.include_router(bookingController.router)
+app.include_router(theatreController.router)
+
 
 
 Base.metadata.create_all(bind=engine)
