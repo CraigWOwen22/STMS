@@ -1,0 +1,24 @@
+#homeScreen {
+    text-align: center;
+    padding: 20px;
+}
+
+#bookingsTable {
+    width: 80%;
+    margin: 0 auto;
+    border-collapse: collapse;
+}
+
+#bookingsTable th, #bookingsTable td {
+    border: 1px solid #ddd;
+    padding: 8px;
+}
+
+#bookingsTable th {
+    background-color: #f2f2f2;
+}
+
+#openModalBtn {
+    margin-top: 20px;
+    padding: 10px 20px;
+}
