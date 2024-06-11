@@ -3,6 +3,7 @@ from .models import User, Booking, Theatre
 from sqlalchemy.orm import Session
 from sqlalchemy.sql import func
 from fastapi import HTTPException
+from . import hashing
 
 
 ########## Theatre Services ##########
@@ -31,13 +32,13 @@ def getAllPrices(db:Session):
 
 #create a new user
 def createUser(db: Session, userData: UserResp):
-
+    
     existing_user = db.query(User).filter(User.username == userData['username']).first()
     if existing_user:
         raise HTTPException(status_code=400, detail="User already exists")
 
     
-    user = User(username = userData['username'], password = userData['password'])
+    user = User(username = userData['username'], password = hashing.Hash.bcrypt(userData['password']))
     db.add(user)
     db.commit()
     db.refresh(user)
