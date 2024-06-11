@@ -10,11 +10,13 @@ function App() {
   const [token, setToken] = useState(null);
 
   
+
+  
   return (
 
 
     <>
-       {(token == null) ? <HomeScreen />: <LoginPage setToken={setToken}/>}
+       {(token != null) ? <HomeScreen />: <LoginPage setToken={setToken}/>}
   </>
  
     
