@@ -3,12 +3,22 @@ import React from 'react';
 import './App.css';
 import HomeScreen from './HomeScreen';
 import LoginPage from './LoginPage';
+import { useState } from "react";
 
 function App() {
+  
+  const [token, setToken] = useState(null);
+
+  
   return (
 
-    //  <LoginPage />
-   <HomeScreen />
+
+    <>
+       {(token == null) ? <HomeScreen />: <LoginPage setToken={setToken}/>}
+  </>
+ 
+    
+   
    
     
   );

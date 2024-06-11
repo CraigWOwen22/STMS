@@ -1,7 +1,7 @@
 
 from .database import Base
-from sqlalchemy import Column, Integer, String, Boolean, Float, DateTime, ForeignKey
-from datetime import datetime
+from sqlalchemy import Column, Integer, String, Boolean, Float, DateTime, ForeignKey, Date
+
 
 class User(Base):
     __tablename__ = "users"
@@ -19,7 +19,7 @@ class Booking(Base):
     show = Column(String(50))
     seats = Column(Integer)
     totalPrice = Column(Integer)
-    bookingDate = Column(String(10)) 
+    bookingDate = Column(Date())
 
 
 #Maybe make a relationship with prices

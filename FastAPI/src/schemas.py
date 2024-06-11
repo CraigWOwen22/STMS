@@ -1,4 +1,5 @@
 from pydantic import BaseModel
+from datetime import date
 
 class UserResp(BaseModel):
     username: str
@@ -12,7 +13,7 @@ class BookingResp(BaseModel):
     section: str
     show: str
     seats: int
-    bookingDate: str
+    bookingDate: date
 
     
 

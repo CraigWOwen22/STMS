@@ -20,6 +20,6 @@ def getAll(db: Session = Depends(get_db)):
     users = services.getAllUsers(db)
     return users
 
-#Login controller pending
+
 
     

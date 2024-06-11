@@ -1,3 +1,4 @@
+from datetime import date
 from ..database import get_db
 from fastapi import Depends, HTTPException, APIRouter
 from sqlalchemy.orm import Session
@@ -16,17 +17,18 @@ def create( bookingData: BookingResp, db: Session = Depends(get_db)):
     return booking
 
 @router.get("/getall", response_model=list[BookingResp], tags=["bookings"])
-def getAll( db: Session = Depends(get_db)):
-    bookings = services.getAllBookings(db)
+def getAll( db: Session = Depends(get_db), token = Depends(services.decryptAccessToken)):
+    userID = token["userID"]
+    bookings = services.getAllBookings(db, userID)
     return bookings
 
 @router.get("/getallsectionseats", tags=["bookings"])
-def getAllSectionSeats(dateData: str, db: Session = Depends(get_db)):
+def getAllSectionSeats(dateData: date, db: Session = Depends(get_db)):
     count = services.getAllSectionSeats(dateData, db)
     return count
 
 @router.get("/getAllSeats", tags=["bookings"])
-def getAllSeats(dateData: str, db: Session = Depends(get_db)):
+def getAllSeats(dateData: date, db: Session = Depends(get_db)):
     count = services.getAllSeats(dateData, db)
     return count
 

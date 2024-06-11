@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import './LoginPage.css';
 
-function LoginPage() {
+
+function LoginPage({setToken}) {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [loggedIn, setLoggedIn] = useState(false);

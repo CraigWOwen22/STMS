@@ -4,11 +4,51 @@ from sqlalchemy.orm import Session
 from sqlalchemy.sql import func
 from fastapi import HTTPException
 from . import hashing
+import jwt
+
+
+
+
+########## Login Services ##########
+
+SECRET_KEY = "Thomas"
+
+def createAccessToken(userID):
+    payload = {
+        "userID": userID
+        }
+    token = jwt.encode(payload, SECRET_KEY, algorithm="HS256")
+
+    return token
+
+def decryptAccessToken(token):
+    try:
+        decodedPayload = jwt.decode(token, SECRET_KEY, algorithms=["HS256"])
+        return decodedPayload
+    except jwt.InvalidTokenError:
+        raise HTTPException(status_code=401, detail="Invalid token")
+
+
+def login(db:Session, userData: User):
+    user = db.query(User).filter(User.username == userData['username']).first()
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+
+    print(f"Username: {user.username}")
+    print(f"Hashed Password: {user.password}")
+
+    if not hashing.Hash.verify(userData['password'], user.password):
+        raise HTTPException(status_code=404, detail="Incorrect password")
+    
+    token = createAccessToken(user.id)
+
+    return {"access_token": token}
+
 
 
 ########## Theatre Services ##########
 
-#create a new section in the theatre
+#create a new section in the theatre(dev)
 def createSection(db: Session, sectionData: Theatre):
 
     existingSection = db.query(Theatre).filter(Theatre.section == sectionData['section']).first()
@@ -30,7 +70,7 @@ def getAllPrices(db:Session):
 
 ########## User Services ##########
 
-#create a new user
+#create a new user(dev)
 def createUser(db: Session, userData: UserResp):
     
     existing_user = db.query(User).filter(User.username == userData['username']).first()
@@ -69,13 +109,13 @@ def createBooking(db: Session, bookingData: BookingResp):
     return booking
 
 
-#get all current bookings
-def getAllBookings(db:Session):
+#get all current bookings related to token
+def getAllBookings(db:Session, userID):
 
-    return db.query(Booking).all()
+    return db.query(Booking).filter(Booking.userID == userID).all()
     
 
-#get all current users
+#get all current users (dev)
 def getAllUsers(db:Session):
     
     return db.query(User).all()
