@@ -1,24 +1,71 @@
+body {
+    font-family: Arial, sans-serif;
+    background-color: #e9ecef; /* Light grey background for the whole page */
+    margin: 0;
+    padding: 0;
+}
+
 #homeScreen {
-    text-align: center;
-    padding: 20px;
+    background-color: #f8f9fa; /* Light grey background for the container */
+    padding: 20px; /* Padding inside the container */
+    margin: 40px auto; /* Margin around the container, auto for centering */
+    border-radius: 10px; /* Rounded corners for the container */
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1); /* Subtle shadow for depth */
+    max-width: 1200px; /* Maximum width for the container */
+}
+
+h1 {
+    text-align: center; /* Center the heading */
+    color: #343a40; /* Dark grey color for the heading */
 }
 
 #bookingsTable {
-    width: 80%;
-    margin: 0 auto;
-    border-collapse: collapse;
+    width: 100%; /* Full width of the container */
+    border-collapse: collapse; /* Collapse borders for cleaner look */
+    margin-bottom: 20px; /* Space below the table */
 }
 
 #bookingsTable th, #bookingsTable td {
-    border: 1px solid #ddd;
-    padding: 8px;
+    border: 1px solid #dee2e6; /* Light grey border for cells */
+    padding: 12px; /* Padding inside cells */
+    text-align: left; /* Left-align text */
 }
 
 #bookingsTable th {
-    background-color: #f2f2f2;
+    background-color: #343a40; /* Dark grey background for header */
+    color: #ffffff; /* White text for header */
+}
+
+#bookingsTable tr:nth-child(even) {
+    background-color: #f2f2f2; /* Light grey background for even rows */
 }
 
 #openModalBtn {
-    margin-top: 20px;
-    padding: 10px 20px;
+    display: block;
+    width: 200px;
+    margin: 20px auto; /* Center the button */
+    padding: 10px 20px; /* Padding inside the button */
+    background-color: #007bff; /* Blue background */
+    color: white; /* White text */
+    border: none; /* Remove default border */
+    border-radius: 5px; /* Rounded corners */
+    cursor: pointer; /* Pointer cursor on hover */
+    text-align: center; /* Center the text */
+}
+
+#openModalBtn:hover {
+    background-color: #0056b3; /* Darker blue on hover */
+}
+
+button {
+    padding: 8px 12px; /* Padding inside the button */
+    background-color: #dc3545; /* Red background */
+    color: white; /* White text */
+    border: none; /* Remove default border */
+    border-radius: 5px; /* Rounded corners */
+    cursor: pointer; /* Pointer cursor on hover */
+}
+
+button:hover {
+    background-color: #c82333; /* Darker red on hover */
 }

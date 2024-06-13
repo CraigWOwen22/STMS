@@ -2,9 +2,10 @@ from .schemas import UserResp, BookingResp, TheatreResp
 from .models import User, Booking, Theatre
 from sqlalchemy.orm import Session
 from sqlalchemy.sql import func
-from fastapi import HTTPException
+from fastapi import HTTPException, Depends
 from . import hashing
 import jwt
+from fastapi.security import OAuth2PasswordBearer
 
 
 
@@ -12,6 +13,7 @@ import jwt
 ########## Login Services ##########
 
 SECRET_KEY = "Thomas"
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
 
 def createAccessToken(userID):
     payload = {
@@ -21,8 +23,9 @@ def createAccessToken(userID):
 
     return token
 
-def decryptAccessToken(token):
+def decryptAccessToken(token:str = Depends(oauth2_scheme)):
     try:
+
         decodedPayload = jwt.decode(token, SECRET_KEY, algorithms=["HS256"])
         return decodedPayload
     except jwt.InvalidTokenError:
@@ -89,18 +92,18 @@ def createUser(db: Session, userData: UserResp):
 ########## Booking Services ##########
 
 #create a new booking
-def createBooking(db: Session, bookingData: BookingResp):
+def createBooking(db: Session, bookingData: BookingResp, userID):
     
     seatsRemainDict = getAllSectionSeats(bookingData['bookingDate'], db) 
     
     for item in seatsRemainDict:
-        if item['key'] == bookingData['section']: #A == B (user)
+        if item['key'] == bookingData['section']: 
             test = item['value']  
 
     if bookingData['seats'] > test:
         raise HTTPException(status_code=409, detail=f"No seats left for section: {bookingData['section']}")
 
-    booking = Booking(show = bookingData['show'], seats = bookingData['seats'], section = bookingData['section'], bookingDate = bookingData['bookingDate'])
+    booking = Booking(price = bookingData['price'], seats = bookingData['seats'], section = bookingData['section'], bookingDate = bookingData['bookingDate'], userID = userID)
 
     db.add(booking)
     db.commit()
@@ -113,6 +116,7 @@ def createBooking(db: Session, bookingData: BookingResp):
 def getAllBookings(db:Session, userID):
 
     return db.query(Booking).filter(Booking.userID == userID).all()
+
     
 
 #get all current users (dev)
@@ -183,7 +187,7 @@ def getAllSeats(dateData: str, db:Session):
                if key in dictTotalSeatsBySecRem]
 
     total_seats = sum(item['value'] for item in resultList)
-    totalSeatsDict = {'Total': total_seats}
+    totalSeatsDict = {'total': total_seats}
 
     return totalSeatsDict
     

@@ -10,15 +10,22 @@ class UserResp(BaseModel):
 
 
 class BookingResp(BaseModel):
+    id: int 
     section: str
-    show: str
     seats: int
+    price: float
     bookingDate: date
 
     
 
     class Config():
         orm_mode = True
+
+class BookingCreate(BaseModel):
+    section: str
+    seats: int
+    price: float #Change to float?
+    bookingDate: date
 
 
 

@@ -16,13 +16,10 @@ class Booking(Base):
     id = Column(Integer, primary_key=True, index=True)
     userID = Column(Integer, ForeignKey("users.id"))
     section = Column(String(1))
-    show = Column(String(50))
     seats = Column(Integer)
-    totalPrice = Column(Integer)
+    price = Column(Integer)
     bookingDate = Column(Date())
 
-
-#Maybe make a relationship with prices
 class Theatre(Base):
     __tablename__ = "theatre"
 

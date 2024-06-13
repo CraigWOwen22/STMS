@@ -16,7 +16,7 @@ function App() {
 
 
     <>
-       {(token != null) ? <HomeScreen />: <LoginPage setToken={setToken}/>}
+       {(token != null) ? <HomeScreen token = {token}/>: <LoginPage setToken={setToken}/>}
   </>
  
     

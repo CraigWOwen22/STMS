@@ -8,7 +8,7 @@
     width: 100%;
     height: 100%;
     overflow: auto;
-    background-color: rgba(0,0,0,0.4);
+    background-color: rgba(0, 0, 0, 0.4);
     justify-content: center;
     align-items: center;
 }
@@ -18,8 +18,10 @@
     background-color: #fefefe;
     padding: 20px;
     border: 1px solid #888;
-    width: 60%;
-    max-width: 600px;
+    width: 80%; /* Adjusted width to 80% of the viewport */
+    max-width: 800px; /* Maximum width of 800px */
+    border-radius: 8px; /* Rounded corners */
+    box-shadow: 0 0 15px rgba(0, 0, 0, 0.3); /* Drop shadow */
 }
 
 /* The Close Button */
@@ -35,4 +37,19 @@
     color: black;
     text-decoration: none;
     cursor: pointer;
+}
+
+/* Submit Button */
+button[type="submit"] {
+    background-color: #4CAF50; /* Green background */
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    margin-top: 10px;
+}
+
+button[type="submit"]:hover {
+    background-color: #45a049; /* Darker green on hover */
 }
