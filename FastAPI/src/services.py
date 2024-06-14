@@ -1,4 +1,4 @@
-from .schemas import UserResp, BookingResp, TheatreResp
+from .schemas import UserResp, BookingResp, TheatreResp, UserCreate, BookingCreate
 from .models import User, Booking, Theatre
 from sqlalchemy.orm import Session
 from sqlalchemy.sql import func
@@ -74,12 +74,12 @@ def getAllPrices(db:Session):
 ########## User Services ##########
 
 #create a new user(dev)
-def createUser(db: Session, userData: UserResp):
+def createUser(db: Session, userData: UserCreate):
     
     existing_user = db.query(User).filter(User.username == userData['username']).first()
     if existing_user:
         raise HTTPException(status_code=400, detail="User already exists")
-
+    
     
     user = User(username = userData['username'], password = hashing.Hash.bcrypt(userData['password']))
     db.add(user)
@@ -92,7 +92,7 @@ def createUser(db: Session, userData: UserResp):
 ########## Booking Services ##########
 
 #create a new booking
-def createBooking(db: Session, bookingData: BookingResp, userID):
+def createBooking(db: Session, bookingData: BookingCreate, userID):
     
     seatsRemainDict = getAllSectionSeats(bookingData['bookingDate'], db) 
     

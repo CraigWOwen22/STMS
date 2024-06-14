@@ -5,9 +5,12 @@ class UserResp(BaseModel):
     username: str
     password: str
 
-    class Config():
-        orm_mode = True
+   #class Config():
+    #orm_mode = True
 
+class UserCreate(BaseModel):
+    username: str
+    password: str
 
 class BookingResp(BaseModel):
     id: int 
@@ -16,27 +19,27 @@ class BookingResp(BaseModel):
     price: float
     bookingDate: date
 
-    
-
-    class Config():
-        orm_mode = True
+    #class Config():
+       #orm_mode = True
 
 class BookingCreate(BaseModel):
     section: str
     seats: int
-    price: float #Change to float?
+    price: float 
     bookingDate: date
-
-
 
 class TheatreResp(BaseModel):
     section:str
     seats: int
     prices: int
     
+    #class Config():
+      #orm_mode = True
 
-    class Config():
-        orm_mode = True
+class TheatreCreate(BaseModel):
+    section:str
+    seats: int
+    prices: int
 
 
     

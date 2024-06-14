@@ -20,7 +20,7 @@ const CreateBookingModal = ({ show, onClose, onSubmit, userToken }) => {
                 setOptions(data);
 
                 // Fetch total seats from getAllSeats API
-                const totalSeatsResponse = await fetch(`http://127.0.0.1:8000/bookings/getAllSeats?dateData=${formattedDate}`);
+                const totalSeatsResponse = await fetch(`http://127.0.0.1:8000/bookings/getallseats?dateData=${formattedDate}`);
                 const totalSeatsData = await totalSeatsResponse.json();
                 if (totalSeatsData && totalSeatsData.total) {
                     setTotalSeats(totalSeatsData.total);
