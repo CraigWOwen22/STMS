@@ -47,7 +47,7 @@ const HomeScreen = ({token}) => {
         }
     };
 
-    const handleCreateBooking = (booking) => {
+    const handleCreateBooking = (booking) => { 
         const newBooking = {
             id: bookings.length + 1,
             section: booking.section,
@@ -84,7 +84,7 @@ const HomeScreen = ({token}) => {
                 </tbody>
             </table>
             <button id="openModalBtn" onClick={openModal}>Create Booking</button>
-            <CreateBookingModal show={isModalOpen} onClose={closeModal} onSubmit={handleCreateBooking} />
+            <CreateBookingModal token = {token} show={isModalOpen} onClose={closeModal} onSubmit={handleCreateBooking} />
         </div>
     );
 };

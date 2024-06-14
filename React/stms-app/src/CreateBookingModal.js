@@ -1,12 +1,19 @@
 import React, { useEffect, useState } from 'react';
 import './CreateBookingModal.css';
 
-const CreateBookingModal = ({ show, onClose, onSubmit, userToken }) => {
+const CreateBookingModal = ({ show, onClose, token}) => {
     const [section, setSection] = useState('');
     const [date, setDate] = useState('');
     const [options, setOptions] = useState([]);
     const [totalSeats, setTotalSeats] = useState(null);
-    console.log(date, section, totalSeats, )
+    const [range, setRange] = useState([]);
+    const [selectedValue, setSelectedValue] = useState('');
+    const [prices, setPrices] = useState([
+        { section: "A", price: 50 },
+        { section: "B", price: 30 },
+        { section: "C", price: 20 }
+    ]);
+    const [totalPrice, setTotalPrice] = useState(null);
 
     useEffect(() => {
         const fetchSectionSeats = async () => {
@@ -35,13 +42,103 @@ const CreateBookingModal = ({ show, onClose, onSubmit, userToken }) => {
         fetchSectionSeats();
     }, [date]);
 
+    useEffect(() => {
+        const fetchPrices = async () => {
+            try {
+                const response = await fetch(`http://127.0.0.1:8000/theatre/getallprices`);
+                const pricesData = await response.json();
+                setPrices(pricesData);
+            } catch (error) {
+                console.error('Error fetching prices:', error);
+            }
+        };
+
+        fetchPrices();
+    }, []); // Fetch prices only once, when the component mounts
+
+    useEffect(() => {
+        if (section) {
+            const selectedOption = options.find(option => option.key === section);
+            if (selectedOption) {
+                setRange([...Array(selectedOption.value + 1).keys()].slice(1));
+            }
+        } else {
+            setRange([]);
+        }
+    }, [section, options]);
+
+    useEffect(() => {
+        if (section && selectedValue) {
+            const selectedSectionPrice = prices.find(item => item.section === section);
+
+            if (selectedSectionPrice) {
+                const pricePerSeat = selectedSectionPrice.price;
+                const seatQuantity = parseInt(selectedValue, 10); // Convert selectedValue to integer
+                const totalPriceCalculation = pricePerSeat * seatQuantity;
+
+                setTotalPrice(totalPriceCalculation);
+            } else {
+                setTotalPrice(null); // Handle case where section price is not found
+            }
+        } else {
+            setTotalPrice(null); // Reset total price if section or selectedValue changes to empty or null
+        }
+    }, [section, selectedValue, prices]);
+
     if (!show) {
         return null;
     }
 
-    const handleSubmit = (event) => {
+    const handleSubmit = async (event) => {
         event.preventDefault();
-        onSubmit({ section, date });
+
+        // Convert selectedValue to integer
+        const seatQuantity = parseInt(selectedValue, 10);
+
+        // Find price per seat for the selected section
+        const selectedSectionPrice = prices.find(item => item.section === section);
+        if (!selectedSectionPrice) {
+            console.error(`Price for section ${section} not found.`);
+            return;
+        }
+        const pricePerSeat = selectedSectionPrice.price;
+
+        // Calculate total price
+        const totalPriceCalculation = pricePerSeat * seatQuantity;
+
+        // Prepare payload for POST request
+        const payload = {
+            section: section,
+            seats: seatQuantity,
+            price: totalPriceCalculation,
+            bookingDate: date
+        };
+
+        try {
+            // Make POST request
+            const response = await fetch('http://127.0.0.1:8000/bookings/create', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
+                },
+                body: JSON.stringify(payload)
+            });
+
+            if (response.ok) {
+                const data = await response.json();
+                console.log('Booking created successfully:', data);
+                // Handle success, maybe show a success message or redirect
+            } else {
+                console.error('Failed to create booking:', response.status);
+                // Handle error, maybe show an error message
+            }
+        } catch (error) {
+            console.error('Error creating booking:', error);
+            // Handle error, maybe show an error message
+        }
+
+        // Close modal after submission
         onClose();
     };
 
@@ -71,6 +168,25 @@ const CreateBookingModal = ({ show, onClose, onSubmit, userToken }) => {
                         </label>
                     ))}
                     <br />
+                    {range.length > 0 && (
+                        <div>
+                            <label htmlFor="range">Select Seat Quantity:</label>
+                            <select
+                                id="range"
+                                name="range"
+                                value={selectedValue}
+                                onChange={(e) => setSelectedValue(e.target.value)}
+                            >
+                                <option value="">Select...</option>
+                                {range.map((num) => (
+                                    <option key={num} value={num}>{num}</option>
+                                ))}
+                            </select>
+                        </div>
+                    )}
+                    {totalPrice !== null && (
+                        <p>Total Price: £{totalPrice.toFixed(2)}</p>
+                    )}
                     {totalSeats !== null && (
                         <p>Total Seats Available: {totalSeats}</p>
                     )}

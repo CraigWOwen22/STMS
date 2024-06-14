@@ -9,7 +9,7 @@ router = APIRouter(prefix="/users")
 
 #API to create a new user 
 @router.post("/create", tags=["users"])
-def create( userData: UserCreate, db: Session = Depends(get_db), tags=["users"]):
+def create( userData: UserCreate, db: Session = Depends(get_db)):
     userData = {'username': userData.username, 'password': userData.password}
     user = services.createUser(db, userData)
     return userData
