@@ -7,7 +7,7 @@ from ..schemas import UserResp, UserCreate
 
 router = APIRouter(prefix="/users")
 
-#API to create a new user 
+#API to create a new user (TEST DONE)
 @router.post("/create", tags=["users"])
 def create( userData: UserCreate, db: Session = Depends(get_db)):
     userData = {'username': userData.username, 'password': userData.password}
@@ -19,7 +19,6 @@ def create( userData: UserCreate, db: Session = Depends(get_db)):
 def getAll(db: Session = Depends(get_db)):
     users = services.getAllUsers(db)
     return users
-
 
 
     

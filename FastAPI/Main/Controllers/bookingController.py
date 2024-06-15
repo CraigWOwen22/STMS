@@ -9,7 +9,7 @@ from ..schemas import  BookingResp, BookingCreate
 
 router = APIRouter(prefix="/bookings")
 
-#API to allow a booking to be added
+#API to allow a booking to be added (TEST DONE)
 @router.post("/create", response_model=BookingResp, tags=["bookings"])
 def create( bookingData: BookingCreate, db: Session = Depends(get_db), token = Depends(services.decryptAccessToken)):
     userID = token["userID"]
@@ -24,7 +24,7 @@ def getAll( db: Session = Depends(get_db), token = Depends(services.decryptAcces
     bookings = services.getAllBookings(db, userID)
     return bookings
 
-#API to get all seats remaining based on given date
+#API to get all seats remaining based on given date (TEST DONE)
 @router.get("/getallsectionseats", tags=["bookings"])
 def getAllSectionSeats(dateData: date, db: Session = Depends(get_db)):
     count = services.getAllSectionSeats(dateData, db)
