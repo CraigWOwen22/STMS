@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from 'react';
+import axios from 'axios';
 import './CreateBookingModal.css';
 
-const CreateBookingModal = ({ show, onClose, token}) => {
+const CreateBookingModal = ({ show, onClose, token }) => {
     const [section, setSection] = useState('');
     const [date, setDate] = useState('');
     const [options, setOptions] = useState([]);
@@ -22,17 +23,15 @@ const CreateBookingModal = ({ show, onClose, token}) => {
             const formattedDate = new Date(date).toISOString().split('T')[0]; // Format date to yyyy-mm-dd
 
             try {
-                const response = await fetch(`http://127.0.0.1:8000/bookings/getallsectionseats?dateData=${formattedDate}`);
-                const data = await response.json();
-                setOptions(data);
+                const response = await axios.get(`http://127.0.0.1:8000/bookings/getallsectionseats?dateData=${formattedDate}`);
+                setOptions(response.data);
 
                 // Fetch total seats from getAllSeats API
-                const totalSeatsResponse = await fetch(`http://127.0.0.1:8000/bookings/getallseats?dateData=${formattedDate}`);
-                const totalSeatsData = await totalSeatsResponse.json();
-                if (totalSeatsData && totalSeatsData.total) {
-                    setTotalSeats(totalSeatsData.total);
+                const totalSeatsResponse = await axios.get(`http://127.0.0.1:8000/bookings/getallseats?dateData=${formattedDate}`);
+                if (totalSeatsResponse.data && totalSeatsResponse.data.total) {
+                    setTotalSeats(totalSeatsResponse.data.total);
                 } else {
-                    console.error('Invalid data format for total seats:', totalSeatsData);
+                    console.error('Invalid data format for total seats:', totalSeatsResponse.data);
                 }
             } catch (error) {
                 console.error('Error fetching section seats:', error);
@@ -45,9 +44,8 @@ const CreateBookingModal = ({ show, onClose, token}) => {
     useEffect(() => {
         const fetchPrices = async () => {
             try {
-                const response = await fetch(`http://127.0.0.1:8000/theatre/getallprices`);
-                const pricesData = await response.json();
-                setPrices(pricesData);
+                const response = await axios.get('http://127.0.0.1:8000/theatre/getallprices');
+                setPrices(response.data);
             } catch (error) {
                 console.error('Error fetching prices:', error);
             }
@@ -78,69 +76,49 @@ const CreateBookingModal = ({ show, onClose, token}) => {
 
                 setTotalPrice(totalPriceCalculation);
             } else {
-                setTotalPrice(null); // Handle case where section price is not found
+                setTotalPrice(null);
             }
         } else {
             setTotalPrice(null); // Reset total price if section or selectedValue changes to empty or null
         }
     }, [section, selectedValue, prices]);
 
-    if (!show) {
-        return null;
-    }
-
     const handleSubmit = async (event) => {
         event.preventDefault();
-
-        // Convert selectedValue to integer
-        const seatQuantity = parseInt(selectedValue, 10);
-
-        // Find price per seat for the selected section
-        const selectedSectionPrice = prices.find(item => item.section === section);
-        if (!selectedSectionPrice) {
-            console.error(`Price for section ${section} not found.`);
-            return;
-        }
-        const pricePerSeat = selectedSectionPrice.price;
-
-        // Calculate total price
-        const totalPriceCalculation = pricePerSeat * seatQuantity;
-
+    
         // Prepare payload for POST request
         const payload = {
             section: section,
-            seats: seatQuantity,
-            price: totalPriceCalculation,
+            seats: selectedValue,
+            price: totalPrice,
             bookingDate: date
         };
 
         try {
             // Make POST request
-            const response = await fetch('http://127.0.0.1:8000/bookings/create', {
-                method: 'POST',
+            const response = await axios.post('http://127.0.0.1:8000/bookings/create', payload, {
                 headers: {
                     'Content-Type': 'application/json',
                     'Authorization': `Bearer ${token}`
-                },
-                body: JSON.stringify(payload)
+                }
             });
 
-            if (response.ok) {
-                const data = await response.json();
-                console.log('Booking created successfully:', data);
-                // Handle success, maybe show a success message or redirect
+            if (response.status === 200 || response.status === 201) {
+                console.log('Booking created successfully:', response.data);
             } else {
                 console.error('Failed to create booking:', response.status);
-                // Handle error, maybe show an error message
             }
         } catch (error) {
             console.error('Error creating booking:', error);
-            // Handle error, maybe show an error message
         }
 
         // Close modal after submission
         onClose();
     };
+
+    if (!show) {
+        return null;
+    }
 
     return (
         <div className="modal">
@@ -154,6 +132,7 @@ const CreateBookingModal = ({ show, onClose, token}) => {
                         id="date"
                         name="date"
                         required
+                        value={date}
                         onChange={(e) => setDate(e.target.value)}
                     /><br />
                     {options.map((option) => (
@@ -163,6 +142,7 @@ const CreateBookingModal = ({ show, onClose, token}) => {
                                 name="section"
                                 value={option.key}
                                 required
+                                checked={section === option.key}
                                 onChange={(e) => setSection(e.target.value)}
                             /> Section {option.key} - {option.value} Seats Available
                         </label>

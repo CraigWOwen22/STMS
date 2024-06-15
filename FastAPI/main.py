@@ -1,7 +1,7 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from src.Controllers import userController, bookingController, theatreController, authController
-from src.database import Base, engine
+from Main.Controllers import userController, bookingController, theatreController, authController
+from Main.database import Base, engine
 from passlib.context import CryptContext
 
 app = FastAPI()
