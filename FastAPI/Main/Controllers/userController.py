@@ -12,7 +12,7 @@ router = APIRouter(prefix="/users")
 def create( userData: UserCreate, db: Session = Depends(get_db)):
     userData = {'username': userData.username, 'password': userData.password}
     user = services.createUser(db, userData)
-    return userData
+    return user
 
 #API to get all current users 
 @router.get("/getall", response_model=list[UserResp], tags=["users"])

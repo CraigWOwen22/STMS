@@ -74,19 +74,23 @@ def getAllPrices(db:Session):
 ########## User Services ##########
 
 #create a new user(dev)
-def createUser(db: Session, userData: UserCreate):
-    
-    existing_user = db.query(User).filter(User.username == userData['username']).first()
+def createUser(db: Session, userData):
+    if isinstance(userData, dict):
+        userData = UserCreate(**userData)  # Convert dictionary to UserCreate instance
+
+    existing_user = db.query(User).filter(User.username == userData.username).first()
     if existing_user:
         raise HTTPException(status_code=400, detail="User already exists")
     
+    hashed_password = hashing.Hash.bcrypt(userData.password)  # Hash the password 
     
-    user = User(username = userData['username'], password = hashing.Hash.bcrypt(userData['password']))
+    user = User(username=userData.username, password=hashed_password)
     db.add(user)
     db.commit()
     db.refresh(user)
     
     return user
+    
 
 
 ########## Booking Services ##########
@@ -168,6 +172,8 @@ def getAllSeats(dateData: str, db:Session):
     totalSeatsBookedBySec = db.query(Booking.section, func.sum(Booking.seats)).filter(
         Booking.section.in_(['A', 'B', 'C']),
         Booking.bookingDate == dateData).group_by(Booking.section).all()
+
+   
     
     bookedSeatsDict = dict(totalSeatsBookedBySec)
     

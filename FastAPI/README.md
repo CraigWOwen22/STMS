@@ -1,0 +1,1 @@
+pip install fastapi pytest httpx pytest-asyncio
