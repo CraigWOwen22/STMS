@@ -14,7 +14,7 @@ def create( userData: UserCreate, db: Session = Depends(get_db)):
     user = services.createUser(db, userData)
     return user
 
-#API to get all current users 
+#API to get all current users (TEST DONE)
 @router.get("/getall", response_model=list[UserResp], tags=["users"])
 def getAll(db: Session = Depends(get_db)):
     users = services.getAllUsers(db)

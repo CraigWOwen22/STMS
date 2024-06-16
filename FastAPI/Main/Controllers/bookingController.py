@@ -17,7 +17,7 @@ def create( bookingData: BookingCreate, db: Session = Depends(get_db), token = D
     booking = services.createBooking(db, bookingData, userID)
     return booking
 
-#API to get all the bookings releated to the user ID
+#API to get all the bookings releated to the user ID  (TEST DONE)
 @router.get("/getall", response_model=list[BookingResp], tags=["bookings"])
 def getAll( db: Session = Depends(get_db), token = Depends(services.decryptAccessToken)):
     userID = token["userID"]
@@ -30,13 +30,13 @@ def getAllSectionSeats(dateData: date, db: Session = Depends(get_db)):
     count = services.getAllSectionSeats(dateData, db)
     return count
 
-#API to get total seats in theatre based on given date
+#API to get total seats in theatre based on given date (TEST DONE)
 @router.get("/getallseats", tags=["bookings"])
 def getAllSeats(dateData: date, db: Session = Depends(get_db)):
     count = services.getAllSeats(dateData, db)
     return count
 
-#API to remove a booking from the bookings
+#API to remove a booking from the bookings (TEST DONE)
 @router.delete("/{booking_id}", tags=["bookings"])
 def delete_booking(booking_id: int, db: Session = Depends(get_db)):
     booking = services.deleteBookingByID(booking_id, db)

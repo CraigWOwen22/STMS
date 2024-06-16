@@ -22,7 +22,7 @@ const HomeScreen = ({token}) => {
         };
     
         fetchBookings();
-    }, [token]);
+    }, [token, isModalOpen]);
     
 
     const openModal = () => {
@@ -65,7 +65,7 @@ const HomeScreen = ({token}) => {
                 <thead>
                     <tr>
                         <th>Section</th>
-                        <th>Price</th>
+                        <th>Price(£)</th>
                         <th>Seats</th>
                         <th>Booking Date</th>
                         <th>Actions</th>

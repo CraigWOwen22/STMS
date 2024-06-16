@@ -39,7 +39,7 @@ const CreateBookingModal = ({ show, onClose, token }) => {
         };
 
         fetchSectionSeats();
-    }, [date]);
+    }, [date, show]);
 
     useEffect(() => {
         const fetchPrices = async () => {
@@ -52,7 +52,7 @@ const CreateBookingModal = ({ show, onClose, token }) => {
         };
 
         fetchPrices();
-    }, []); // Fetch prices only once, when the component mounts
+    }, [show]); // Fetch prices only once, when the component mounts
 
     useEffect(() => {
         if (section) {
@@ -102,16 +102,21 @@ const CreateBookingModal = ({ show, onClose, token }) => {
                     'Authorization': `Bearer ${token}`
                 }
             });
-
+        
             if (response.status === 200 || response.status === 201) {
                 console.log('Booking created successfully:', response.data);
             } else {
                 console.error('Failed to create booking:', response.status);
             }
         } catch (error) {
-            console.error('Error creating booking:', error);
+            if (error.response && error.response.status === 409) {
+                console.error('Not enough seats available.');
+                alert('Not enough seats available. Please check seat availibility and try again.'); // This will show an alert to the user
+            } else {
+                console.error('Error creating booking:', error);
+            }
         }
-
+        
         // Close modal after submission
         onClose();
     };
@@ -131,6 +136,7 @@ const CreateBookingModal = ({ show, onClose, token }) => {
                         type="date"
                         id="date"
                         name="date"
+                        min={new Date().toISOString().split("T")[0]}
                         required
                         value={date}
                         onChange={(e) => setDate(e.target.value)}
