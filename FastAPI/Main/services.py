@@ -8,13 +8,12 @@ import jwt
 from fastapi.security import OAuth2PasswordBearer
 
 
-
-
-########## Login Services ##########
+############################## Login Services ##############################
 
 SECRET_KEY = "Thomas"
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
 
+# Function to take in the userID and return a token
 def createAccessToken(userID):
     payload = {
         "userID": userID
@@ -23,6 +22,7 @@ def createAccessToken(userID):
 
     return token
 
+# Function to decrypt access token and returnn the payload within it
 def decryptAccessToken(token:str = Depends(oauth2_scheme)):
     try:
 
@@ -31,7 +31,7 @@ def decryptAccessToken(token:str = Depends(oauth2_scheme)):
     except jwt.InvalidTokenError:
         raise HTTPException(status_code=401, detail="Invalid token")
 
-
+# Login a user based on data given and that of the DB contents
 def login(db:Session, userData: User):
     user = db.query(User).filter(User.username == userData['username']).first()
     if not user:
@@ -48,10 +48,9 @@ def login(db:Session, userData: User):
     return {"access_token": token}
 
 
+############################## Theatre Services ##############################
 
-########## Theatre Services ##########
-
-#create a new section in the theatre(dev)
+# Create a new section in the theatre(dev)
 def createSection(db: Session, sectionData: Theatre):
 
     existingSection = db.query(Theatre).filter(Theatre.section == sectionData['section']).first()
@@ -65,24 +64,23 @@ def createSection(db: Session, sectionData: Theatre):
     
     return section
 
-
-#get all priced by section
+# Get all prices by section
 def getAllPrices(db:Session):
     return db.query(Theatre.section, Theatre.prices).all()
     
 
-########## User Services ##########
+############################## User Services ##############################
 
-#create a new user(dev)
+# Create a new user
 def createUser(db: Session, userData):
     if isinstance(userData, dict):
-        userData = UserCreate(**userData)  # Convert dictionary to UserCreate instance
+        userData = UserCreate(**userData)  
 
     existing_user = db.query(User).filter(User.username == userData.username).first()
     if existing_user:
         raise HTTPException(status_code=400, detail="User already exists")
     
-    hashed_password = hashing.Hash.bcrypt(userData.password)  # Hash the password 
+    hashed_password = hashing.Hash.bcrypt(userData.password) 
     
     user = User(username=userData.username, password=hashed_password)
     db.add(user)
@@ -92,10 +90,9 @@ def createUser(db: Session, userData):
     return user
     
 
+############################## Booking Services ##############################
 
-########## Booking Services ##########
-
-#create a new booking
+# Create a new booking
 def createBooking(db: Session, bookingData: BookingCreate, userID):
     
     seatsRemainDict = getAllSectionSeats(bookingData['bookingDate'], db) 
@@ -115,21 +112,17 @@ def createBooking(db: Session, bookingData: BookingCreate, userID):
 
     return booking
 
-
-#get all current bookings related to token
+# Get all current bookings related to token
 def getAllBookings(db:Session, userID):
 
     return db.query(Booking).filter(Booking.userID == userID).all()
 
-    
-
-#get all current users (dev)
+# Get all current users (dev)
 def getAllUsers(db:Session):
     
     return db.query(User).all()
 
-
-#get remaining seats by section 
+# Get remaining seats by section 
 def getAllSectionSeats(dateData: str, db: Session):
     
     totalSeatsBySec = db.query(Theatre.section, Theatre.seats).all()
@@ -159,8 +152,7 @@ def getAllSectionSeats(dateData: str, db: Session):
     
     return resultList
 
-
-#get total available seats
+# Get total available seats
 def getAllSeats(dateData: str, db:Session):
 
     #Futute improvement - Possibly the getAllSectionSeats can be used here to prevent repetitve code
@@ -172,8 +164,6 @@ def getAllSeats(dateData: str, db:Session):
     totalSeatsBookedBySec = db.query(Booking.section, func.sum(Booking.seats)).filter(
         Booking.section.in_(['A', 'B', 'C']),
         Booking.bookingDate == dateData).group_by(Booking.section).all()
-
-   
     
     bookedSeatsDict = dict(totalSeatsBookedBySec)
     
@@ -197,7 +187,7 @@ def getAllSeats(dateData: str, db:Session):
 
     return totalSeatsDict
     
-#delete a booking by bookingid
+# Delete a booking by bookingid
 def deleteBookingByID(booking_id: int, db: Session): 
     
     booking = db.query(Booking).filter(Booking.id == booking_id).first()

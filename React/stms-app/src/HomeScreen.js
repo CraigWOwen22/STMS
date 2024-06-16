@@ -7,6 +7,7 @@ const HomeScreen = ({token}) => {
     const [bookings, setBookings] = useState([]);
     const [isModalOpen, setIsModalOpen] = useState(false);
 
+    // Fetch all bookings related to userID from token
     useEffect(() => {
         const fetchBookings = async () => {
             try {
@@ -24,15 +25,17 @@ const HomeScreen = ({token}) => {
         fetchBookings();
     }, [token, isModalOpen]);
     
-
+    // Function to track if modal should be open
     const openModal = () => {
         setIsModalOpen(true);
     };
 
+    // Function to track if modal should be closed
     const closeModal = () => {
         setIsModalOpen(false);
     };
 
+    // Function to delete user based on bookingID
     const handleDelete = async (id) => {
         try {
 
@@ -47,16 +50,6 @@ const HomeScreen = ({token}) => {
         }
     };
 
-    const handleCreateBooking = (booking) => { 
-        const newBooking = {
-            id: bookings.length + 1,
-            section: booking.section,
-            price: booking.price,
-            seats: booking.seats,
-            bookingDate: booking.bookingDate
-        };
-        setBookings([...bookings, newBooking]);
-    };
 
     return (
         <div id="homeScreen">
@@ -64,11 +57,11 @@ const HomeScreen = ({token}) => {
             <table id="bookingsTable">
                 <thead>
                     <tr>
-                        <th>Section</th>
-                        <th>Price(£)</th>
-                        <th>Seats</th>
+                        <th>Theatre Section</th>
+                        <th>Price (£)</th>
+                        <th>Number of Seats</th>
                         <th>Booking Date</th>
-                        <th>Actions</th>
+                        <th>Delete?</th>
                     </tr>
                 </thead>
                 <tbody id="bookingsList">
@@ -84,7 +77,7 @@ const HomeScreen = ({token}) => {
                 </tbody>
             </table>
             <button id="openModalBtn" onClick={openModal}>Create Booking</button>
-            <CreateBookingModal token = {token} show={isModalOpen} onClose={closeModal} onSubmit={handleCreateBooking} />
+            <CreateBookingModal token = {token} show={isModalOpen} onClose={closeModal}/>
         </div>
     );
 };

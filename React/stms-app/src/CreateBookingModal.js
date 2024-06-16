@@ -16,11 +16,12 @@ const CreateBookingModal = ({ show, onClose, token }) => {
     ]);
     const [totalPrice, setTotalPrice] = useState(null);
 
+    // Fetch all sections and set total seats in use state variables 
     useEffect(() => {
         const fetchSectionSeats = async () => {
-            if (!date) return; // Don't fetch data if date is not set
+            if (!date) return; 
 
-            const formattedDate = new Date(date).toISOString().split('T')[0]; // Format date to yyyy-mm-dd
+            const formattedDate = new Date(date).toISOString().split('T')[0]; 
 
             try {
                 const response = await axios.get(`http://127.0.0.1:8000/bookings/getallsectionseats?dateData=${formattedDate}`);
@@ -41,6 +42,7 @@ const CreateBookingModal = ({ show, onClose, token }) => {
         fetchSectionSeats();
     }, [date, show]);
 
+    // Fetch prices of sections
     useEffect(() => {
         const fetchPrices = async () => {
             try {
@@ -52,8 +54,9 @@ const CreateBookingModal = ({ show, onClose, token }) => {
         };
 
         fetchPrices();
-    }, [show]); // Fetch prices only once, when the component mounts
+    }, [show]); 
 
+    // Fetch selected option and populate drop box accordingly
     useEffect(() => {
         if (section) {
             const selectedOption = options.find(option => option.key === section);
@@ -65,6 +68,7 @@ const CreateBookingModal = ({ show, onClose, token }) => {
         }
     }, [section, options]);
 
+    // Work out total cost based on what is set in radio buttons and drop down box
     useEffect(() => {
         if (section && selectedValue) {
             const selectedSectionPrice = prices.find(item => item.section === section);
@@ -83,10 +87,12 @@ const CreateBookingModal = ({ show, onClose, token }) => {
         }
     }, [section, selectedValue, prices]);
 
+
+    // Submit the booking based on current use state variables 
     const handleSubmit = async (event) => {
         event.preventDefault();
     
-        // Prepare payload for POST request
+        
         const payload = {
             section: section,
             seats: selectedValue,
@@ -111,13 +117,12 @@ const CreateBookingModal = ({ show, onClose, token }) => {
         } catch (error) {
             if (error.response && error.response.status === 409) {
                 console.error('Not enough seats available.');
-                alert('Not enough seats available. Please check seat availibility and try again.'); // This will show an alert to the user
+                alert('Not enough seats available. Please check seat availibility and try again.');
             } else {
                 console.error('Error creating booking:', error);
             }
         }
         
-        // Close modal after submission
         onClose();
     };
 

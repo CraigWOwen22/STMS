@@ -4,7 +4,7 @@ from sqlalchemy import Column, Integer, String, Float, DateTime, ForeignKey, Dat
 from sqlalchemy.orm import relationship
 
 
-#A table to store all users 
+# A table to store all users 
 class User(Base):
     __tablename__ = "users"
 
@@ -13,7 +13,7 @@ class User(Base):
     password = Column(String) 
     bookings = relationship("Booking", back_populates="user")
 
-#A table to store current bookings with a relationship to users table to maintain data integrity 
+# A table to store current bookings with a relationship to users table to maintain data integrity 
 class Booking(Base):
     __tablename__ = "bookings"
 
@@ -25,7 +25,7 @@ class Booking(Base):
     bookingDate = Column(Date())
     user = relationship("User", back_populates="bookings")
 
-#A table to store information on the theatre
+# A table to store information on the theatre
 class Theatre(Base):
     __tablename__ = "theatre"
 
