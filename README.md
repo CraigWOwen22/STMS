@@ -83,14 +83,3 @@ Run the following command in the FastAPI dir
 
 
 
-pip install fastapi pytest httpx pytest-asyncio
-
-
-pytest -v test_api.py
-
-uvicorn Main.main:app --reload
-
-
-
-
-
