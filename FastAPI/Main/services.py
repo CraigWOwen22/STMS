@@ -143,19 +143,19 @@ def getAllSectionSeats(dateData: str, db: Session):
         else:
             raise ValueError(f"Section '{section}' not found in the Theatre table.")
 
-    dictTotalSeatsBySecRem = dict(totalSeatsBookedBySec)
+    dictTotalSeatsBySecBooked = dict(totalSeatsBookedBySec)
     dictTotalSeatsBySec = dict(totalSeatsBySec)
 
-    resultList = [{'key': key, 'value': dictTotalSeatsBySec[key] - dictTotalSeatsBySecRem[key]} 
+    resultList = [{'key': key, 'value': dictTotalSeatsBySec[key] - dictTotalSeatsBySecBooked[key]} 
                for key in dictTotalSeatsBySec 
-               if key in dictTotalSeatsBySecRem]
+               if key in dictTotalSeatsBySecBooked]
     
     return resultList
 
 # Get total available seats
 def getAllSeats(dateData: str, db:Session):
 
-    #Futute improvement - Possibly the getAllSectionSeats can be used here to prevent repetitve code
+    #Future improvement - Possibly the getAllSectionSeats can be used here to prevent repetitve code
      
     totalSeatsBySec = db.query(Theatre.section, Theatre.seats).all()
     
@@ -175,12 +175,12 @@ def getAllSeats(dateData: str, db:Session):
         else:
             raise ValueError(f"Section '{section}' not found in the Theatre table.")
 
-    dictTotalSeatsBySecRem = dict(totalSeatsBookedBySec)
+    dictTotalSeatsBySecBooked = dict(totalSeatsBookedBySec)
     dictTotalSeatsBySec = dict(totalSeatsBySec)
 
-    resultList = [{'key': key, 'value': dictTotalSeatsBySec[key] - dictTotalSeatsBySecRem[key]} 
+    resultList = [{'key': key, 'value': dictTotalSeatsBySec[key] - dictTotalSeatsBySecBooked[key]} 
                for key in dictTotalSeatsBySec
-               if key in dictTotalSeatsBySecRem]
+               if key in dictTotalSeatsBySecBooked]
 
     total_seats = sum(item['value'] for item in resultList)
     totalSeatsDict = {'total': total_seats}

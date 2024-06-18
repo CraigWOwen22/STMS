@@ -1,4 +1,4 @@
-/* The Modal (background) */
+
 .modal {
     display: flex;
     position: fixed;
@@ -13,18 +13,18 @@
     align-items: center;
 }
 
-/* Modal Content/Box */
+
 .modal-content {
     background-color: #fefefe;
     padding: 20px;
     border: 1px solid #888;
-    width: 80%; /* Adjusted width to 80% of the viewport */
-    max-width: 800px; /* Maximum width of 800px */
-    border-radius: 8px; /* Rounded corners */
-    box-shadow: 0 0 15px rgba(0, 0, 0, 0.3); /* Drop shadow */
+    width: 80%;
+    max-width: 800px;
+    border-radius: 8px; 
+    box-shadow: 0 0 15px rgba(0, 0, 0, 0.3); 
 }
 
-/* The Close Button */
+
 .close {
     color: #aaa;
     float: right;
@@ -39,9 +39,9 @@
     cursor: pointer;
 }
 
-/* Submit Button */
+
 button[type="submit"] {
-    background-color: #4CAF50; /* Green background */
+    background-color: #4CAF50; 
     color: white;
     padding: 10px 20px;
     border: none;
@@ -51,5 +51,5 @@ button[type="submit"] {
 }
 
 button[type="submit"]:hover {
-    background-color: #45a049; /* Darker green on hover */
+    background-color: #45a049; 
 }

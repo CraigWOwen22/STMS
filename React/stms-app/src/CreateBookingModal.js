@@ -100,8 +100,14 @@ const CreateBookingModal = ({ show, onClose, token }) => {
             bookingDate: date
         };
 
+        if (!section || !selectedValue || !totalPrice || !date) {
+            console.error('Incorrect or empty fields! Please select correct fields and try again.');
+            alert('Incorrect or empty fields! Please select correct fields and try again.');
+            return; 
+        }
+
         try {
-            // Make POST request
+            
             const response = await axios.post('http://127.0.0.1:8000/bookings/create', payload, {
                 headers: {
                     'Content-Type': 'application/json',
@@ -111,13 +117,15 @@ const CreateBookingModal = ({ show, onClose, token }) => {
         
             if (response.status === 200 || response.status === 201) {
                 console.log('Booking created successfully:', response.data);
-            } else {
+            } 
+            else {
                 console.error('Failed to create booking:', response.status);
             }
         } catch (error) {
             if (error.response && error.response.status === 409) {
                 console.error('Not enough seats available.');
                 alert('Not enough seats available. Please check seat availibility and try again.');
+                return;
             } else {
                 console.error('Error creating booking:', error);
             }

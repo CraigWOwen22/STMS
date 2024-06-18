@@ -1,10 +1,10 @@
 body {
     display: flex;
-    justify-content: center; /* Center horizontally */
-    align-items: center; /* Center vertically */
-    height: 100vh; /* Make the body take up the full viewport height */
-    margin: 0; /* Remove default margin */
-    padding: 0; /* Remove default padding */
+    justify-content: center; 
+    align-items: center; 
+    height: 100vh; 
+    margin: 0; 
+    padding: 0; 
     background-color: #f9f9f9;
   }
   
